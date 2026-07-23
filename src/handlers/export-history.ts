@@ -1,15 +1,41 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { inlineButton, inlineKeyboard } from "../toolkit/index.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
+const composer = new Composer<Ctx>();
 
-const composer = new Composer();
+function formatHistory(history: { text: string; isUser: boolean; timestamp: number }[]): string {
+  if (history.length === 0) return "";
+  return history
+    .map((msg) => {
+      const role = msg.isUser ? "You" : "Bot";
+      const time = new Date(msg.timestamp).toLocaleString();
+      return `[${time}] ${role}: ${msg.text}`;
+    })
+    .join("\n\n");
+}
+
+composer.callbackQuery("history:export", async (ctx) => {
+  await ctx.answerCallbackQuery();
+  if (ctx.session.history.length === 0) {
+    await ctx.editMessageText("No conversation history to export.", {
+      reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+    });
+    return;
+  }
+  const formatted = formatHistory(ctx.session.history);
+  await ctx.editMessageText(formatted, {
+    reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+  });
+});
 
 composer.command("export_history", async (ctx) => {
-  await ctx.reply("Receive full conversation history as formatted text");
+  if (ctx.session.history.length === 0) {
+    await ctx.reply("No conversation history to export.");
+    return;
+  }
+  const formatted = formatHistory(ctx.session.history);
+  await ctx.reply(formatted);
 });
 
 export default composer;

@@ -1,15 +1,32 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { inlineButton, inlineKeyboard } from "../toolkit/index.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
+const composer = new Composer<Ctx>();
 
-const composer = new Composer();
+composer.callbackQuery("history:clear", async (ctx) => {
+  await ctx.answerCallbackQuery();
+  const count = ctx.session.history.length;
+  if (count === 0) {
+    await ctx.editMessageText("Your conversation history is already empty.", {
+      reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+    });
+    return;
+  }
+  ctx.session.history = [];
+  await ctx.editMessageText(`Conversation history cleared (${count} messages removed).`, {
+    reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+  });
+});
 
 composer.command("clear_history", async (ctx) => {
-  await ctx.reply("Reset conversation history for current thread");
+  const count = ctx.session.history.length;
+  if (count === 0) {
+    await ctx.reply("Your conversation history is already empty.");
+    return;
+  }
+  ctx.session.history = [];
+  await ctx.reply(`Conversation history cleared (${count} messages removed).`);
 });
 
 export default composer;

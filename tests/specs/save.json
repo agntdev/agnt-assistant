@@ -1,19 +1,17 @@
 [
   {
-    "name": "/save",
+    "name": "/save with no arguments shows usage",
     "steps": [
       {
+        "send": { "text": "/save" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Save a named text snippet (usage: /save \u003cname\u003e \u003ctext\u003e)"
+              "text": "Usage: /save <name> <text>\n\nExample: /save greeting Hello, how can I help you?"
             }
           }
-        ],
-        "send": {
-          "text": "/save"
-        }
+        ]
       }
     ]
   }

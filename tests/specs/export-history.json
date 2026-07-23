@@ -1,19 +1,17 @@
 [
   {
-    "name": "/export_history",
+    "name": "/export_history with no history",
     "steps": [
       {
+        "send": { "text": "/export_history" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Receive full conversation history as formatted text"
+              "text": "No conversation history to export."
             }
           }
-        ],
-        "send": {
-          "text": "/export_history"
-        }
+        ]
       }
     ]
   }

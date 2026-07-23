@@ -1,19 +1,17 @@
 [
   {
-    "name": "/get",
+    "name": "/get with no arguments shows usage",
     "steps": [
       {
+        "send": { "text": "/get" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Retrieve a saved snippet by name (usage: /get \u003cname\u003e)"
+              "text": "No saved snippets. Use /save <name> <text> to create one."
             }
           }
-        ],
-        "send": {
-          "text": "/get"
-        }
+        ]
       }
     ]
   }

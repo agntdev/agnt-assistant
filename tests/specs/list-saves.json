@@ -1,19 +1,17 @@
 [
   {
-    "name": "/list_saves",
+    "name": "/list_saves with no snippets",
     "steps": [
       {
+        "send": { "text": "/list_saves" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "List all saved snippet names"
+              "text": "No saved snippets. Use /save <name> <text> to create one."
             }
           }
-        ],
-        "send": {
-          "text": "/list_saves"
-        }
+        ]
       }
     ]
   }
