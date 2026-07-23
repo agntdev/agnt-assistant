@@ -1,0 +1,20 @@
+[
+  {
+    "name": "/save",
+    "steps": [
+      {
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": {
+              "text": "Save a named text snippet (usage: /save \u003cname\u003e \u003ctext\u003e)"
+            }
+          }
+        ],
+        "send": {
+          "text": "/save"
+        }
+      }
+    ]
+  }
+]
