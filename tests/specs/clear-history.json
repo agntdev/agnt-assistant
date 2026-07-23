@@ -1,19 +1,17 @@
 [
   {
-    "name": "/clear_history",
+    "name": "/clear_history resets conversation history",
     "steps": [
       {
+        "send": { "text": "/clear_history" },
         "expect": [
           {
             "method": "sendMessage",
             "payload": {
-              "text": "Reset conversation history for current thread"
+              "text": "Your conversation history is already empty."
             }
           }
-        ],
-        "send": {
-          "text": "/clear_history"
-        }
+        ]
       }
     ]
   }

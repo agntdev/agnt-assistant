@@ -1,15 +1,49 @@
 import { Composer } from "grammy";
+import type { Ctx } from "../bot.js";
+import { inlineButton, inlineKeyboard } from "../toolkit/index.js";
 
-// SCAFFOLD — generated from the bot blueprint BEFORE the agent runs.
-// Keep a LIVE registration (.command / .callbackQuery / …) so this feature is
-// never an empty stub. Replace the reply body with real logic + copy; if you
-// change the user-facing text, update tests/specs to match EXACTLY.
-// Do NOT rewrite src/bot.ts — buildBot() already auto-loads this module.
+const composer = new Composer<Ctx>();
 
-const composer = new Composer();
+composer.callbackQuery("snippet:get", async (ctx) => {
+  await ctx.answerCallbackQuery();
+  const snippetNames = Object.keys(ctx.session.snippets);
+  if (snippetNames.length === 0) {
+    await ctx.editMessageText("No saved snippets. Use /save <name> <text> to create one.", {
+      reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+    });
+    return;
+  }
+  await ctx.editMessageText(
+    "To retrieve a snippet, use the command:\n\n/get <name>\n\nSaved snippets: " +
+      snippetNames.join(", "),
+    {
+      reply_markup: inlineKeyboard([[inlineButton("⬅️ Back to menu", "menu:main")]]),
+    },
+  );
+});
 
 composer.command("get", async (ctx) => {
-  await ctx.reply("Retrieve a saved snippet by name (usage: /get \u003cname\u003e)");
+  const text = ctx.message?.text ?? "";
+  const name = text.slice("/get".length).trim().toLowerCase();
+  if (!name) {
+    const snippetNames = Object.keys(ctx.session.snippets);
+    if (snippetNames.length === 0) {
+      await ctx.reply("No saved snippets. Use /save <name> <text> to create one.");
+      return;
+    }
+    await ctx.reply(
+      "Usage: /get <name>\n\nSaved snippets: " + snippetNames.join(", "),
+    );
+    return;
+  }
+
+  const snippet = ctx.session.snippets[name];
+  if (!snippet) {
+    await ctx.reply(`Snippet "${name}" not found.`);
+    return;
+  }
+
+  await ctx.reply(snippet.content);
 });
 
 export default composer;

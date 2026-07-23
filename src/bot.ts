@@ -5,8 +5,22 @@ import type { StorageAdapter } from "grammy";
 // The per-chat session shape (ephemeral conversation state only). Extend as the
 // bot grows. Durable domain data must NOT live here — use the toolkit's
 // persistent storage (see AGENTS.md).
+export interface ConversationMessage {
+  text: string;
+  isUser: boolean;
+  timestamp: number;
+}
+
+export interface Snippet {
+  name: string;
+  content: string;
+  createdAt: number;
+}
+
 export interface Session {
-  // example: step?: "awaiting_amount";
+  history: ConversationMessage[];
+  snippets: Record<string, Snippet>;
+  profile?: { telegramId: number; displayName: string };
 }
 
 export type Ctx = BotContext<Session>;
@@ -42,7 +56,7 @@ export interface BuildBotOptions {
  */
 export async function buildBot(token: string, opts: BuildBotOptions = {}) {
   const bot = createBot<Session>(token, {
-    initial: () => ({}),
+    initial: () => ({ history: [], snippets: {} }),
     storage: opts.storage,
   });
 
